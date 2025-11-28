@@ -2,9 +2,15 @@ package com.back.SpringValidationTest_1.domain.post.post.controller;
 
 import com.back.SpringValidationTest_1.domain.post.post.entity.Post;
 import com.back.SpringValidationTest_1.domain.post.post.service.PostService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -46,16 +52,25 @@ public class PostController {
         return getWriteFormHtml();
     }
 
+
+    @AllArgsConstructor
+    @Getter
+    public static class WriteForm {
+        @NotBlank
+        @Size(min = 2, max = 20)
+        private String title;
+        @NotBlank
+        @Size(min = 2, max = 20)
+        private String content;
+    }
+
     @PostMapping("/posts/doWrite")
     @ResponseBody
     @Transactional
     public String write(
-            @RequestParam(defaultValue = "") String title,
-            @RequestParam(defaultValue = "") String content
+            @Valid WriteForm form
     ) {
-        if (title.isBlank()) return getWriteFormHtml("제목을 입력해주세요.",title,content,"title");
-        if (content.isBlank()) return getWriteFormHtml("내용을 입력해주세요.",title,content,"content");
-        Post post = postService.write(title, content);
+        Post post = postService.write(form.getTitle(),form.getContent());
 
         return "%d번 글이 생성되었습니다.".formatted(post.getId());
     }
