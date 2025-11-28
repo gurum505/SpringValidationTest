@@ -12,24 +12,51 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
     private final PostService postService;
 
+    private String getWriteFormHtml() {
+        return getWriteFormHtml("","","","");
+    }
+
+    private String getWriteFormHtml(String errorMessage,String title, String content,String errorFieldName) {
+        return """
+                <div style="color: red;">%s</div>
+                
+                <form method="POST" action="doWrite">
+                  <input type="text" name="title" placeholder="제목" value="%s"autofocus>
+                  <br>
+                  <textarea name="content" placeholder="내용">%s</textarea>
+                  <br>
+                  <input type="submit" value="작성">
+                </form>
+                
+                <script>
+                const errorFieldName = '%s';
+                if ( errorFieldName.length > 0 ){
+                    const forms = document.querySelectorAll('form');
+                    const lastForm = forms[forms.length - 1];
+                    lastForm[errorFieldName].focus();
+                }   
+                </script>
+                
+                """.formatted(errorMessage,title,content,errorFieldName);
+    }
+
     @GetMapping("/posts/write")
     @ResponseBody
-    public String showWrite(){
-        return """
-                <form action="http://localhost:8080/posts/doWrite" method="POST">
-                                  <input type="text" name="title" placeholder="제목" value="안녕">
-                                  <br>
-                                  <textarea name="content" placeholder="내용">반가워.</textarea>
-                                  <br>
-                                  <input type="submit" value="작성">
-                                </form>
-                """;
+    public String showWrite() {
+        return getWriteFormHtml();
     }
+
     @PostMapping("/posts/doWrite")
     @ResponseBody
     @Transactional
-    public String doWrite(@RequestParam("title") String title,
-                          @RequestParam(value = "content") String content){
-        return postService.save(new Post(title,content)).toString();
+    public String write(
+            @RequestParam(defaultValue = "") String title,
+            @RequestParam(defaultValue = "") String content
+    ) {
+        if (title.isBlank()) return getWriteFormHtml("제목을 입력해주세요.",title,content,"title");
+        if (content.isBlank()) return getWriteFormHtml("내용을 입력해주세요.",title,content,"content");
+        Post post = postService.write(title, content);
+
+        return "%d번 글이 생성되었습니다.".formatted(post.getId());
     }
 }
