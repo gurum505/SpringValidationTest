@@ -25,15 +25,9 @@ public class PostController {
     private final PostService postService;
 
     @ModelAttribute("siteName")
-    public String siteName(){
-        return "커뮤니티사이트A";
+    public String siteName() {
+        return "커뮤니티 사이트 A";
     }
-
-    @GetMapping("/posts/write")
-    public String showWrite(@ModelAttribute("form") WriteForm writeForm) {
-        return "post/post/write";
-    }
-
 
     @AllArgsConstructor
     @Getter
@@ -44,6 +38,11 @@ public class PostController {
         @NotBlank(message = "3-내용을 입력해주세요.")
         @Size(min = 2, max = 20, message = "4-내용은 2자 이상, 20자 이하로 입력가능합니다.")
         private String content;
+    }
+
+    @GetMapping("/posts/write")
+    public String showWrite(@ModelAttribute("form") WriteForm form) {
+        return "post/post/write";
     }
 
     @PostMapping("/posts/doWrite")
@@ -62,7 +61,9 @@ public class PostController {
                     .map(field -> "<!--%s--><li data-error-field-name=\"%s\">%s</li>".formatted(field[1], field[0], field[2]))
                     .sorted()
                     .collect(Collectors.joining("\n"));
-            model.addAttribute("errorMessage",errorMessage);
+
+            model.addAttribute("errorMessage", errorMessage);
+
             return "post/post/write";
         }
 
