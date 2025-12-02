@@ -16,6 +16,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -71,6 +72,35 @@ public class PostController {
 
         model.addAttribute("post", post);
 
-        return "redirect:/posts/write";
+        return "redirect:/posts/" + post.getId();
+
     }
+
+    @GetMapping("/posts/{id}")
+    @Transactional(readOnly = true)
+    public String showDetail(
+            @PathVariable int id,
+            Model model
+    ) {
+        Post post = postService.findById(id).get();
+
+        model.addAttribute("post", post);
+
+        return "post/post/detail";
+    }
+
+    @GetMapping("/posts/")
+    public String redirectPost(
+    ) {
+        return "redirect:/posts";
+    }
+
+    @GetMapping("/posts")
+    @Transactional(readOnly = true)
+    @ResponseBody
+    public List<Post> showList() {
+        return postService.findAll();
+    }
+
+
 }
