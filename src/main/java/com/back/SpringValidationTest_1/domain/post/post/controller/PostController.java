@@ -45,13 +45,13 @@ public class PostController {
         return "post/post/write";
     }
 
-    @PostMapping("/posts/doWrite")
+    @PostMapping("/posts/write")
     @Transactional
     public String write(
             @ModelAttribute("form") @Valid WriteForm form,
             BindingResult bindingResult,
             Model model
-    ) {
+            ) {
         if (bindingResult.hasErrors()) {
 
             String errorMessage = bindingResult
@@ -71,6 +71,6 @@ public class PostController {
 
         model.addAttribute("post", post);
 
-        return "post/post/writeDone";
+        return "redirect:/posts/write";
     }
 }
