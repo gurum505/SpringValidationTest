@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -29,6 +30,56 @@ public class PostController {
     public String siteName() {
         return "커뮤니티 사이트 A";
     }
+
+
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    public static class ModifyForm {
+        @NotBlank(message = "01-title-제목을 입력해주세요.")
+        @Size(min = 2, max = 20, message = "02-title-제목은 2자 이상, 20자 이하로 입력가능합니다.")
+        private String title;
+        @NotBlank(message = "03-content-내용을 입력해주세요.")
+        @Size(min = 2, max = 20, message = "04-content-내용은 2자 이상, 20자 이하로 입력가능합니다.")
+        private String content;
+    }
+
+    @GetMapping("/posts/{id}/modify")
+    @Transactional(readOnly = true)
+    public String showModify(
+            @PathVariable int id,
+            @ModelAttribute("form") ModifyForm form,
+            Model model
+    ) {
+        Post post = postService.findById(id).get();
+
+        model.addAttribute("post", post);
+        form.setTitle(post.getTitle());
+        form.setContent(post.getContent());
+
+        return "post/post/modify";
+    }
+
+    @PostMapping("/posts/{id}/modify")
+    @Transactional
+    public String modify(
+            @PathVariable int id,
+            @Valid @ModelAttribute("form") ModifyForm form,
+            BindingResult bindingResult,
+            Model model
+    ) {
+        Post post = postService.findById(id).get();
+        model.addAttribute("post", post);
+
+        if (bindingResult.hasErrors()) {
+            return "post/post/modify";
+        }
+
+        postService.modify(post, form.getTitle(), form.getContent());
+
+        return "redirect:/posts/" + post.getId();
+    }
+
 
     @AllArgsConstructor
     @Getter
@@ -52,29 +103,16 @@ public class PostController {
             @ModelAttribute("form") @Valid WriteForm form,
             BindingResult bindingResult,
             Model model
-            ) {
+    ) {
         if (bindingResult.hasErrors()) {
-
-            String errorMessage = bindingResult
-                    .getFieldErrors()
-                    .stream()
-                    .map(fieldError -> (fieldError.getField() + "-" + fieldError.getDefaultMessage()).split("-", 3))
-                    .map(field -> "<!--%s--><li data-error-field-name=\"%s\">%s</li>".formatted(field[1], field[0], field[2]))
-                    .sorted()
-                    .collect(Collectors.joining("\n"));
-
-            model.addAttribute("errorMessage", errorMessage);
-
             return "post/post/write";
         }
 
         Post post = postService.write(form.getTitle(), form.getContent());
 
-        model.addAttribute("post", post);
-
         return "redirect:/posts/" + post.getId();
-
     }
+
 
     @GetMapping("/posts/{id}")
     @Transactional(readOnly = true)
@@ -89,18 +127,19 @@ public class PostController {
         return "post/post/detail";
     }
 
-    @GetMapping("/posts/")
-    public String redirectPost(
-    ) {
-        return "redirect:/posts";
-    }
 
     @GetMapping("/posts")
     @Transactional(readOnly = true)
-    @ResponseBody
-    public List<Post> showList() {
-        return postService.findAll();
+    public String showList(Model mod) {
+        List<Post> posts = postService.findAll();
+
+        mod.addAttribute("posts", posts);
+
+        return "post/post/list";
     }
 
-
+    @GetMapping("/posts/")
+    public String redirectToList() {
+        return "redirect:/posts";
+    }
 }

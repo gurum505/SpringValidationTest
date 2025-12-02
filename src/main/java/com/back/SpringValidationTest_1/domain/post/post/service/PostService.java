@@ -2,6 +2,8 @@ package com.back.SpringValidationTest_1.domain.post.post.service;
 
 import com.back.SpringValidationTest_1.domain.post.post.entity.Post;
 import com.back.SpringValidationTest_1.domain.post.post.repository.PostRepository;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -31,5 +33,11 @@ public class PostService {
 
     public List<Post> findAll() {
         return postRepository.findAll();
+    }
+
+    public void modify(Post post,  String title, String content) {
+        post.setContent(content);
+        post.setTitle(title);
+        postRepository.save(post);
     }
 }

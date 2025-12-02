@@ -4,9 +4,11 @@ import com.back.SpringValidationTest_1.global.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 public class Post extends BaseEntity {
     private String title;
