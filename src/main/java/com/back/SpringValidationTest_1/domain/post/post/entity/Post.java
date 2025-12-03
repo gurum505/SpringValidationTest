@@ -63,6 +63,7 @@ public class Post extends BaseEntity {
 
     @Override
     public boolean equals(Object obj) {
+        if(obj == this) return true;
         if(obj == null || obj.getClass() != getClass()) return false;
         BaseEntity that = (BaseEntity) obj;
         return  this.getId() == that.getId();
