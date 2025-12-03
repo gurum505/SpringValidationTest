@@ -2,6 +2,7 @@ package com.back.SpringValidationTest_1.domain.post.post.service;
 
 import com.back.SpringValidationTest_1.domain.post.post.entity.Post;
 import com.back.SpringValidationTest_1.domain.post.post.repository.PostRepository;
+import com.back.SpringValidationTest_1.domain.post.postComment.entity.PostComment;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
@@ -39,5 +40,12 @@ public class PostService {
         post.setContent(content);
         post.setTitle(title);
         postRepository.save(post);
+    }
+    public void writeComment(Post post, String content) {
+        post.addComment(content);
+    }
+
+    public boolean deleteComment(Post post, PostComment postComment) {
+        return post.deleteComment(postComment);
     }
 }

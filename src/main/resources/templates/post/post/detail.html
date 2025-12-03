@@ -8,10 +8,51 @@
 <h3>수정일 : <span th:text="${#temporals.format(post.modifyDate, 'yy.MM.dd HH:mm')}">수성일</span></h3>
 
 <h3>내용</h3>
-<div style="white-space: pre-line;">[[${post.content}]]</div>
 
+<div style="white-space: pre-line; border:1px solid red">[[${post.content}]]</div>
+
+<h3>댓글작성</h3>
+<script>
+    function submitWriteForm(form){
+        form.content.value = form.content.value.trim();
+        if( form.content.value.length == 0){
+            alert("빈내용");
+            form.content.focus();
+            return false;
+        }else if( form.content.value.length < 2 || form.content.value.length > 20){
+            alert(" 2자 이상 20자 이하");
+            form.content.focus();
+            return false;
+        }
+        return true;
+    }
+</script>
+
+<form onsubmit="return submitWriteForm(this);" th:action="@{/posts/{id}/comments/write(id=${post.id})}" method="post">
+    <div>
+        <label for="content">내용</label>
+        <textarea id="content" name="content" rows="5" cols="50"></textarea>
+    </div>
+    <br>
+    <div>
+        <button type="submit">작성</button>
+    </div>
+</form>
+
+<ul>
+    <li th:each="postComment : ${post.comments.reversed}">
+        <h3>번호 : <span th:text="${postComment.id}">댓글 번호</span></h3>
+        <h4>작성일 : <span th:text="${#temporals.format(postComment.createDate, 'yy.MM.dd HH:mm')}">작성일</span></h4>
+        <h4>수정일 : <span th:text="${#temporals.format(postComment.modifyDate, 'yy.MM.dd HH:mm')}">수정일</span></h4>
+        <div style="white-space: pre-line; border:1px solid green" th:text="${postComment.content}">댓글 내용</div>
+        <div>
+            <a th:href="@{/posts/{id}/comments/{commentId}/modify(id=${post.id}, commentId=${postComment.id})}">수정</a>
+            <a onclick="return confirm('정말?');" th:href="@{/posts/{id}/comments/{commentId}/delete(id=${post.id}, commentId=${postComment.id})}">삭제</a>
+        </div>
+    </li>
+</ul>
 <div>
     <a href=".">글 목록</a>
     <a href="write">글 쓰기</a>
-    <a th:href="@{{id}/modify(id=${post.id})}">글 수정</a>
-</div>
+    <a th:href="@{{id}/modify(id=${post.id})}">글 수정</a>]
+    </div>
