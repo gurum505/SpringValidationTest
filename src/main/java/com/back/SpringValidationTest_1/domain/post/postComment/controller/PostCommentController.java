@@ -12,9 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -46,7 +44,7 @@ public class PostCommentController {
         return "post/postComment/modify";
     }
 
-    @PostMapping("/posts/{postId}/comments/{id}/modify")
+    @PutMapping("/posts/{postId}/comments/{id}/modify")
     @Transactional
     public String modify(
             @PathVariable int postId,
@@ -83,7 +81,7 @@ public class PostCommentController {
     }
 
 
-    @GetMapping("/posts/{postId}/comments/{id}/delete")
+    @DeleteMapping("/posts/{postId}/comments/{id}/delete")
     @Transactional
     public String delete(
             @PathVariable int postId,
