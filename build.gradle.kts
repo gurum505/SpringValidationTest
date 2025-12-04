@@ -36,6 +36,9 @@ dependencies {
     runtimeOnly("org.springframework.boot:spring-boot-h2console")
     annotationProcessor("org.projectlombok:lombok")
     implementation("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
+    testImplementation("org.springframework.security:spring-security-test")
 }
 
 tasks.withType<Test> {
